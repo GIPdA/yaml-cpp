@@ -126,6 +126,21 @@ struct as_if<T, void> {
   }
 };
 
+template <typename T>
+struct as_if<T*, void> {
+  explicit as_if(const Node& node_) : node(node_) {}
+  const Node& node;
+
+  T* operator()(T* t) const {
+    if (!node.m_pNode || !t)
+      throw TypedBadConversion<T>(node.Mark());
+
+    if (convert<T*>::decode(node, t))
+      return t;
+    throw TypedBadConversion<T>(node.Mark());
+  }
+};
+
 template <>
 struct as_if<std::string, void> {
   explicit as_if(const Node& node_) : node(node_) {}
@@ -144,6 +159,13 @@ inline T Node::as() const {
   if (!m_isValid)
     throw InvalidNode();
   return as_if<T, void>(*this)();
+}
+
+template <typename T>
+inline T* Node::as(T* t) const {
+  if (!m_isValid)
+    throw InvalidNode();
+  return as_if<T*, void>(*this)(t);
 }
 
 template <typename T, typename S>
