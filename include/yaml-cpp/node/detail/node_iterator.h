@@ -37,7 +37,7 @@ struct node_iterator_value : public std::pair<V*, V*> {
 };
 
 typedef std::vector<node*> node_seq;
-typedef std::vector<std::pair<node*, node*>> node_map;
+typedef std::vector<std::pair<node*, node*> > node_map;
 
 template <typename V>
 struct node_iterator_type {
@@ -53,9 +53,9 @@ struct node_iterator_type<const V> {
 
 template <typename V>
 class node_iterator_base
-    : public std::iterator<std::forward_iterator_tag, node_iterator_value<V>,
-                           std::ptrdiff_t, node_iterator_value<V>*,
-                           node_iterator_value<V>> {
+    : public std::iterator< std::forward_iterator_tag, node_iterator_value<V>,
+                            std::ptrdiff_t, node_iterator_value<V>*,
+                            node_iterator_value<V> > {
  private:
   struct enabler {};
 
