@@ -227,6 +227,18 @@ inline void Node::SetTag(const std::string& tag) {
   m_pNode->set_tag(tag);
 }
 
+inline bool Node::IsTag(const std::string& tagName) const {
+  if (!m_isValid)
+    throw InvalidNode();
+  return m_pNode ? m_pNode->tag().compare(tagName) == 0 : false;
+}
+
+inline bool Node::IsTag(const char* tagName) const {
+  if (!m_isValid)
+    throw InvalidNode();
+  return m_pNode ? m_pNode->tag().compare(tagName) == 0 : false;
+}
+
 inline EmitterStyle::value Node::Style() const {
   if (!m_isValid)
     throw InvalidNode();

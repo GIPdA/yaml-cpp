@@ -80,6 +80,8 @@ class YAML_CPP_API Node {
 
   const std::string& Tag() const;
   void SetTag(const std::string& tag);
+  bool IsTag(const std::string& tagName) const;
+  bool IsTag(const char* tagName) const;
 
   // style
   // WARNING: This API might change in future releases.
