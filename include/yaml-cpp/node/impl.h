@@ -126,21 +126,6 @@ struct as_if<T, void> {
   }
 };
 
-template <typename T>
-struct as_if<T*, void> {
-  explicit as_if(const Node& node_) : node(node_) {}
-  const Node& node;
-
-  T* operator()(T* t) const {
-    if (!node.m_pNode || !t)
-      throw TypedBadConversion<T>(node.Mark());
-
-    if (convert<T*>::decode(node, t))
-      return t;
-    throw TypedBadConversion<T>(node.Mark());
-  }
-};
-
 template <>
 struct as_if<std::string, void> {
   explicit as_if(const Node& node_) : node(node_) {}
@@ -153,6 +138,38 @@ struct as_if<std::string, void> {
   }
 };
 
+
+template <typename T>
+struct decode_if {
+  explicit decode_if(const Node& node_) : node(node_) {}
+  const Node& node;
+
+  void operator()(T& t) const {
+    if (!node.m_pNode)
+      throw TypedBadConversion<T>(node.Mark());
+
+    if (convert<T>::decode(node, t))
+      return;
+    throw TypedBadConversion<T>(node.Mark());
+  }
+};
+
+template <typename T>
+struct decode_if<T*> {
+  explicit decode_if(const Node& node_) : node(node_) {}
+  const Node& node;
+
+  void operator()(T* t) const {
+    if (!node.m_pNode || !t)
+      throw TypedBadConversion<T>(node.Mark());
+
+    if (convert<T*>::decode(node, t))
+      return;
+    throw TypedBadConversion<T>(node.Mark());
+  }
+};
+
+
 // access functions
 template <typename T>
 inline T Node::as() const {
@@ -161,19 +178,35 @@ inline T Node::as() const {
   return as_if<T, void>(*this)();
 }
 
-template <typename T>
-inline T* Node::as(T* t) const {
-  if (!m_isValid)
-    throw InvalidNode();
-  return as_if<T*, void>(*this)(t);
-}
-
 template <typename T, typename S>
 inline T Node::as(const S& fallback) const {
   if (!m_isValid)
     return fallback;
   return as_if<T, S>(*this)(fallback);
 }
+
+
+template <typename T>
+inline void Node::decode(T& t) const {
+  if (!m_isValid)
+    throw InvalidNode();
+  decode_if<T>(*this)(t);
+}
+
+template <typename T>
+inline void Node::decode(T* t) const {
+  if (!m_isValid)
+    throw InvalidNode();
+  decode_if<T*>(*this)(t);
+}
+
+template <typename T>
+inline void Node::decode(std::shared_ptr<T> t) const {
+  if (!m_isValid)
+    throw InvalidNode();
+  decode_if< std::shared_ptr<T> >(*this)(t);
+}
+
 
 inline const std::string& Node::Scalar() const {
   if (!m_isValid)
