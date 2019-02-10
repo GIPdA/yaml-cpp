@@ -5,8 +5,8 @@ StaticLibrary {
 
     Depends { name: 'cpp' }
 
-    cpp.cxxLanguageVersion: ["c++11"]
-    cpp.minimumOsxVersion: "10.10"
+    cpp.cxxLanguageVersion: ["c++11", "c++14"]
+    cpp.minimumMacosVersion: "10.12"
 
     cpp.includePaths: [path+"/include"]
 
