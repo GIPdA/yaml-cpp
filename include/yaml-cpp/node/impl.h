@@ -211,13 +211,13 @@ inline void Node::decode(std::shared_ptr<T> t) const {
 inline const std::string& Node::Scalar() const {
   if (!m_isValid)
     throw InvalidNode();
-  return m_pNode ? m_pNode->scalar() : detail::node_data::empty_scalar;
+  return m_pNode ? m_pNode->scalar() : detail::node_data::empty_scalar();
 }
 
 inline const std::string& Node::Tag() const {
   if (!m_isValid)
     throw InvalidNode();
-  return m_pNode ? m_pNode->tag() : detail::node_data::empty_scalar;
+  return m_pNode ? m_pNode->tag() : detail::node_data::empty_scalar();
 }
 
 inline void Node::SetTag(const std::string& tag) {
