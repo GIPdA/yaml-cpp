@@ -37,7 +37,7 @@ class YAML_CPP_API Node {
   friend class detail::iterator_base;
   template <typename T, typename S>
   friend struct as_if;
-  template <typename T>
+  template <typename T, typename... Args>
   friend struct decode_if;
 
   typedef YAML::iterator iterator;
@@ -69,12 +69,10 @@ class YAML_CPP_API Node {
   template <typename T, typename S>
   T as(const S& fallback) const;
 
-  template <typename T>
-  void decode(T& t) const;
-  template <typename T>
-  void decode(T* t) const;
-  template <typename T>
-  void decode(std::shared_ptr<T> t) const;
+  template <typename T, typename... Args>
+  void decode(T& t, Args&&... args) const;
+  template <typename T, typename... Args>
+  void decode(T* t, Args&&... args) const;
 
   const std::string& Scalar() const;
 

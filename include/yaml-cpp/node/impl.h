@@ -139,22 +139,22 @@ struct as_if<std::string, void> {
 };
 
 
-template <typename T>
+template <typename T, typename... Args>
 struct decode_if {
   explicit decode_if(const Node& node_) : node(node_) {}
   const Node& node;
 
-  void operator()(T& t) const {
+  void operator()(T& t, Args&&... args) const {
     if (!node.m_pNode)
       throw TypedBadConversion<T>(node.Mark());
 
-    if (convert<T>::decode(node, t))
+    if (convert<T>::decode(node, t, args...))
       return;
     throw TypedBadConversion<T>(node.Mark());
   }
 };
 
-template <typename T>
+/*template <typename T>
 struct decode_if<T*> {
   explicit decode_if(const Node& node_) : node(node_) {}
   const Node& node;
@@ -167,7 +167,9 @@ struct decode_if<T*> {
       return;
     throw TypedBadConversion<T>(node.Mark());
   }
-};
+};//*/
+
+
 
 
 // access functions
@@ -186,25 +188,18 @@ inline T Node::as(const S& fallback) const {
 }
 
 
-template <typename T>
-inline void Node::decode(T& t) const {
+template <typename T, typename... Args>
+inline void Node::decode(T& t, Args&&... args) const {
   if (!m_isValid)
     throw InvalidNode();
-  decode_if<T>(*this)(t);
+  decode_if<T, Args...>(*this)(t, args...);
 }
 
-template <typename T>
-inline void Node::decode(T* t) const {
+template <typename T, typename... Args>
+inline void Node::decode(T* t, Args&&... args) const {
   if (!m_isValid)
     throw InvalidNode();
-  decode_if<T*>(*this)(t);
-}
-
-template <typename T>
-inline void Node::decode(std::shared_ptr<T> t) const {
-  if (!m_isValid)
-    throw InvalidNode();
-  decode_if< std::shared_ptr<T> >(*this)(t);
+  decode_if<T*, Args...>(*this)(t, args...);
 }
 
 
