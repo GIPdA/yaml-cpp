@@ -11,9 +11,8 @@ StaticLibrary {
     cpp.includePaths: [path+"/include"]
 
     files: [
-        "src/*",
-        "src/contrib/*",
-        "include/yaml-cpp/*"
+        "src/**",
+        "include/yaml-cpp/**"
     ]
 
     Export {
