@@ -138,7 +138,6 @@ struct as_if<std::string, void> {
   }
 };
 
-
 template <typename T, typename... Args>
 struct decode_if {
   explicit decode_if(const Node& node_) : node(node_) {}
@@ -148,29 +147,11 @@ struct decode_if {
     if (!node.m_pNode)
       throw TypedBadConversion<T>(node.Mark());
 
-    if (convert<T>::decode(node, t, args...))
+    if (convert<T>::decode(node, t, std::forward<Args>(args)...))
       return;
     throw TypedBadConversion<T>(node.Mark());
   }
 };
-
-/*template <typename T>
-struct decode_if<T*> {
-  explicit decode_if(const Node& node_) : node(node_) {}
-  const Node& node;
-
-  void operator()(T* t) const {
-    if (!node.m_pNode || !t)
-      throw TypedBadConversion<T>(node.Mark());
-
-    if (convert<T*>::decode(node, t))
-      return;
-    throw TypedBadConversion<T>(node.Mark());
-  }
-};//*/
-
-
-
 
 // access functions
 template <typename T>
@@ -187,21 +168,19 @@ inline T Node::as(const S& fallback) const {
   return as_if<T, S>(*this)(fallback);
 }
 
-
 template <typename T, typename... Args>
 inline void Node::decode(T& t, Args&&... args) const {
   if (!m_isValid)
     throw InvalidNode();
-  decode_if<T, Args...>(*this)(t, args...);
+  decode_if<T, Args...>(*this)(t, std::forward<Args>(args)...);
 }
 
 template <typename T, typename... Args>
 inline void Node::decode(T* t, Args&&... args) const {
   if (!m_isValid)
     throw InvalidNode();
-  decode_if<T*, Args...>(*this)(t, args...);
+  decode_if<T*, Args...>(*this)(t, std::forward<Args>(args)...);
 }
-
 
 inline const std::string& Node::Scalar() const {
   if (!m_isValid)
